@@ -29,21 +29,26 @@ export default function Login(props) {
         } else {
             alert("Invalid email or password");
         }
-        // else {
-        //     navigate("/register", {
-        //         state: {firstTime: true}
-        //     });
-        // }
     }   
+    const onHandleRegister = () => {
+        navigate("/register", {
+            state: {firstTime: true}
+        });
+    }
+
     return <>
         <div className="container">
             <h1 className="color-red text-align-center"> Login </h1> 
             <span className="text-align-center"> Please login to continue</span>
-            <form>
+            <form className="container certer-item login-form">
                 <input ref={emailRef} type="text" placeholder="email"/>
                 <input ref={passwordRef} type="password" placeholder="password"/>
-                <button onClick={onHandleLogin}> Login </button>
+                <button onClick={onHandleLogin} className="login-button color-white background-color-blue"> Login </button>
             </form>
+            <div className="container center-item">
+                <span> Don't have an account yet? </span>
+                <button onClick={onHandleRegister} className="login-button color-white background-color-green"> Register </button>
+            </div>
         </div>
     </>
 }

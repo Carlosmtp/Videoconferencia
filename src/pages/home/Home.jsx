@@ -20,7 +20,7 @@ export default function Home() {
                 <h1 className="text-align-center color-red"> Chat EISC </h1>
                 <span className="text-align-center flex align-items-center"> Welcome </span>
             </div>
-            <div className="center-item vertical" >
+            <div className="container center-item vertical" >
                 <button onClick={onHandleLogin} 
                     className="login-button background-color-blue color-white">Login
                 </button>
