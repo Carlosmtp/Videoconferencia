@@ -1,0 +1,69 @@
+.video-call-placeholder{
+    width: 80vw; 
+    height: 45vw; /* Keeps aspect ratio of 16:9 */
+    max-width: 1280px; 
+    max-height: 720px;
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #555;
+    border-radius: 2rem;
+}
+
+.video-call-chat{
+    width: 40vw;
+    height: 45vw;
+    max-width: 320px;
+    max-height: 720px;
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5rem;
+    /* background-color: rgb(145, 202, 235); */
+    padding: 0.5rem;
+    border-radius: 2rem;
+}
+
+.video-call-chat-history{
+    flex: 1;
+    max-width: 320px;
+    background-color: rgb(145, 202, 235);
+    border-radius: 2rem;
+}
+
+.video-call-chat-input-area{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 320px;
+    background-color: rgb(145, 202, 235);
+    border-radius: 2rem;
+}
+
+.video-call-chat-input-text{
+    min-height: 5vw;
+    /* max-width: 320px; */
+    width: 100%;
+    height: auto;
+    background-color: white;
+    font-size: 1.5rem;
+    border-radius: 2rem;
+}
+
+.send-button{
+    width: 100px;
+    height: 3rem;
+    background-color: green;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+}
+
+.send-button:hover{
+    background-color: darkgreen;
+}
