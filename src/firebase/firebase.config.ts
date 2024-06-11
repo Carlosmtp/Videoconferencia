@@ -7,13 +7,15 @@ import { getFirestore } from "firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
+
+console.log("firebaseConfig", process.env.FIREBASE_API_KEY);
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID
+  apiKey: "AIzaSyBLQ06samJE1OStbkSmDGIo1MxXHmIuzag",
+  authDomain: "videoconferencia-339fe.firebaseapp.com",
+  projectId: "videoconferencia-339fe",
+  storageBucket: "videoconferencia-339fe.appspot.com",
+  messagingSenderId: "685926019678",
+  appId: "1:685926019678:web:660881ad06a56e1332bacf"
 };
 
 // Initialize Firebase

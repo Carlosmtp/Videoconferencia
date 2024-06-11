@@ -1,7 +1,9 @@
+// AuthContext.tsx
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase.config.ts";
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
+// Define the User type or import it if it's defined elsewhere
 interface User {
     uid: string;
     email: string | null;
