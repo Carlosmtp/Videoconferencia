@@ -1,27 +1,66 @@
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firebase/firebase.config";
+import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { auth } from "../firebase/firebase.config.ts";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
-type ValueProp = {
-    userId: string
-    setUserId: React.Dispatch<React.SetStateAction<string>>;
+interface User {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    // Add other fields as needed
 }
 
-type ContextProp = {
-    children: React.ReactNode
+interface AuthContextType {
+    userLogged: User | null;
+    loginWithGoogle: () => Promise<{ success: boolean, user?: User, error?: any }>;
 }
 
-export const AppContext = React.createContext({} as ValueProp);
+export const authContext = createContext<AuthContextType | undefined>(undefined);
 
-export default function AuthContext({ children }: ContextProp ){
-    const [ userId, setUserId ] = useState<string>('');
+export const useAuth = () => {
+    const context = useContext(authContext);
+    if (!context) {
+        throw new Error("Error creating context!");
+    }
+    return context;
+}
+
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+    const [userLogged, setUserLogged] = useState<User | null>(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUserLogged(currentUser as User | null);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const loginWithGoogle = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            return { success: true, user: result.user as User };
+        } catch (error) {
+            return { success: false, error };
+        }
+    }
+
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            setUserLogged(null);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error };
+        }
+    }
+
     return (
-        <AppContext.Provider value={{userId, setUserId}}>
+        <authContext.Provider value={{ userLogged, loginWithGoogle }}>
             {children}
-        </AppContext.Provider>
-    )
-}
-
-export const useGlobalContext = ():ValueProp => {
-    return useContext(AppContext)
+        </authContext.Provider>
+    );
 }
