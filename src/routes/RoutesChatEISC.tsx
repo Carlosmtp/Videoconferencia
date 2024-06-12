@@ -14,7 +14,6 @@ export default function RoutesChatEISC() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/video-call" element={<VideoCall />} />
                 <Route path="*" element={<NotFound />} />

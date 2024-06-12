@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { useUser } from "../../context/UserContext.tsx";
 import "./stylesLogin.css";
 import { useNavigate } from "react-router-dom";
 
