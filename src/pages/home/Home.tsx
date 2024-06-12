@@ -19,10 +19,12 @@ export default function Home() {
                 <span className="sub-title">Welcome</span>
             </div>
             <div className="container center-item vertical">
-                <button onClick={onHandleLogin} className="login-button">
-                    <BsGoogle className="icon" />
-                    Login With Google
-                    </button>
+                <div onClick={onHandleLogin} id="login-button">
+                    <div id="google-icon-container">
+                        <BsGoogle id="google-icon" />
+                    </div>
+                    <p>Login With Google</p>
+                    </div>
             </div>
         </div>
     );

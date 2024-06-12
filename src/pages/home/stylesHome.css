@@ -1,33 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-.login-button {
+#login-button {
     font-family: 'Roboto', sans-serif;
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: 500;
-    height: 50px;
-    width: auto; /* Cambiado a "auto" para que el ancho se ajuste al contenido */
     color: #fff;
     background-color: #2f80ed;
     border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
+    border-radius: 50px;
     cursor: pointer;
     transition: background-color 0.3s;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+#login-button p {
+    margin: 10px;
+}
+
+#google-icon-container {
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap; /* Evita que el texto se divida en múltiples líneas */
+    background: #bb6666;
 }
 
-.login-button .icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+#google-icon {
+    height: 24px; /* Ajusta el tamaño según sea necesario */
+    width: 24px;
 }
 
 
-.login-button:hover {
+
+#login-button:hover {
     background-color: #5396ee;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .main-title{
@@ -44,4 +55,4 @@
     font-weight: 400;
     color: #000;
     margin-bottom: 20px;
-}
+} 
