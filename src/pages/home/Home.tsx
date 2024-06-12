@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./stylesHome.css";
+import "../stylesGeneral.css";
 import { useAuth } from "../../context/AuthContext.tsx"
 import { BsGoogle } from "react-icons/bs";
 
@@ -8,8 +9,11 @@ export default function Home() {
     const navigate = useNavigate();
     const auth = useAuth();
     const onHandleLogin = async () => {
-        await auth.loginWithGoogle();
-        console.log("auth", auth);
+        await auth.loginWithGoogle().then(() => {
+            navigate("/dashboard");
+        }).catch((error) => {
+            console.log(error);
+        });
     };
 
     return (
@@ -24,7 +28,7 @@ export default function Home() {
                         <BsGoogle id="google-icon" />
                     </div>
                     <p>Login With Google</p>
-                    </div>
+                </div>
             </div>
         </div>
     );

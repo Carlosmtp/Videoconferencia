@@ -1,0 +1,38 @@
+.main-title{
+    font-family: 'Roboto', sans-serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: #ff0000;
+    margin-bottom: 20px;
+}
+
+.sub-title{
+    font-family: 'Roboto', sans-serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: #000;
+    margin-bottom: 20px;
+} 
+
+#logout-button {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+    background-color: #d9534f;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;;
+    padding: 0 50px;
+}
+
+
+#logout-button:hover {
+    background-color: #c9302c;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: 0.5s;
+}

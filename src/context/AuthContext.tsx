@@ -1,19 +1,18 @@
-// AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase.config.ts";
 
-// Define the User type or import it if it's defined elsewhere
 interface User {
     uid: string;
     email: string | null;
     displayName: string | null;
-    // Add other fields as needed
+    photoURL: string | null;
 }
 
 interface AuthContextType {
     userLogged: User | null;
     loginWithGoogle: () => Promise<{ success: boolean, user?: User, error?: any }>;
+    logout: () => Promise<{ success: boolean, error?: any }>;
 }
 
 export const authContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     return (
-        <authContext.Provider value={{ userLogged, loginWithGoogle }}>
+        <authContext.Provider value={{ userLogged, loginWithGoogle, logout }}>
             {children}
         </authContext.Provider>
     );
