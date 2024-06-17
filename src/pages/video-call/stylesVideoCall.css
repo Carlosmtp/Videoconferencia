@@ -1,107 +1,102 @@
-.video-call-placeholder{
-    width: 80vw; 
-    height: 45vw; /* Keeps aspect ratio of 16:9 */
-    max-width: 1280px; 
-    max-height: 720px;
-    background-color: black;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid #555;
-    border-radius: 2rem;
+.video-call-placeholder,
+.video-call-buttons,
+.video-call-chat {
+  margin: 0;
+  padding: 0;
 }
 
-.video-call-buttons{
-    height: 5rem;
-    display: flex;
-    align-items: top;
-    justify-content: center;
-    flex-grow: 1;
-    width: 80vw; 
-    max-width: 1280px; 
-    margin-top: 0;
+.video-call-placeholder {
+  width: 80vw;
+  height: 45vw; /* Keeps aspect ratio of 16:9 */
+  max-width: 1280px;
+  max-height: 720px;
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #555;
+  border-radius: 2rem;
 }
 
-.video-call-placeholder, .video-call-buttons, .video-call-chat {
-    margin: 0;
-    padding: 0;
+.video-call-buttons {
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: top;
+  flex-grow: 1;
+  width: 80vw;
+  max-width: 1280px;
+  margin-top: 0;
 }
 
-
-.video-call-chat{
-    width: 40vw;
-    height: 45vw;
-    max-width: 320px;
-    max-height: 720px;
-    display: flex;
-    flex-direction: column;
-    font-size: 1.5rem;
-    padding: 0.5rem;
-    border-radius: 2rem;
-    margin-bottom: 5rem;
+.video-call-chat {
+  width: 40vw;
+  height: 45vw;
+  max-width: 320px;
+  max-height: 720px;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 2rem;
+  margin-bottom: 5rem;
+}
+.video-call-chat-history {
+  flex: 1;
+  max-width: 320px;
+  background-color: rgb(145, 202, 235);
+  border-radius: 2rem;
+  resize: none;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+}
+.video-call-chat-history:hover {
+  cursor: default;
+}
+.video-call-chat-input-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 320px;
+  background-color: rgb(145, 202, 235);
+  border-radius: 2rem;
+}
+.video-call-chat-input-textarea {
+  min-height: 3vw;
+  width: 100%;
+  height: auto;
+  background-color: white;
+  font-size: 1.5rem;
+  border-radius: 2rem;
+  resize: none;
+  padding: 0.5rem;
+  margin: 0.25rem;
 }
 
-.video-call-chat-history{
-    flex: 1;
-    max-width: 320px;
-    background-color: rgb(145, 202, 235);
-    border-radius: 2rem;
-    resize: none;
-    font-size: 1.5rem;
-    padding: 0.5rem;
+.send-button {
+  width: 100px;
+  height: 3rem;
+  background-color: green;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 0.5rem;
+}
+.send-button:hover {
+  background-color: darkgreen;
 }
 
-.video-call-chat-history:hover{
-    cursor:default;
-}
-
-.video-call-chat-input-area{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 320px;
-    background-color: rgb(145, 202, 235);
-    border-radius: 2rem;
-}
-
-.video-call-chat-input-textarea{
-    min-height: 3vw;
-    /* max-width: 320px; */
-    width: 100%;
-    height: auto;
-    background-color: white;
-    font-size: 1.5rem;
-    border-radius: 2rem;
-    resize: none;
-    padding: 0.5rem;
-    margin: 0.25rem;
-}
-
-.send-button{
-    width: 100px;
-    height: 3rem;
-    background-color: green;
-    color: white;
-    border: none;
-    font-size: 1.5rem;
-    border-radius: 2rem;
-    cursor: pointer;
-    transition: 0.3s;
-    margin: 0.5rem;
-}
-
-.send-button:hover{
-    background-color: darkgreen;
-}
-
-.round-button{
-    width: 4rem;
-    height: 4rem;
-    border: none;
-    font-size: 2rem;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: 0.3s;
-    margin: 0.5rem;
-}
+.round-button {
+  width: 4rem;
+  height: 4rem;
+  border: none;
+  font-size: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 0.5rem;
+}/*# sourceMappingURL=stylesVideoCall.css.map */

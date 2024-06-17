@@ -1,0 +1,21 @@
+$background: whitesmoke;
+$error-color: red;
+$description-color: black;
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.error{
+    color: $error-color;
+    font-weight: bold;
+}
+
+.description{
+    color: $description-color;
+    font-weight: bold;
+}

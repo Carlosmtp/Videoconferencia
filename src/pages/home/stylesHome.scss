@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+$login-button-border-radius: 50px;
+$google-icon-size: 24px;
+// colors
+$login-button-color: #fff;
+$login-button-bg: #2f80ed;
+$google-icon-bg: #bb6666;
+$login-button-hover: #5396ee;
+
+// mixins
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#login-button {
+    @include flex-center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: $login-button-color;
+    background-color: $login-button-bg;
+    border: none;
+    border-radius: $login-button-border-radius;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    transition: 0.5s;
+}
+
+#login-button p {
+    margin: 10px;
+}
+
+#google-icon-container {
+    @include flex-center;
+    height: $login-button-border-radius;
+    width: $login-button-border-radius;
+    border-radius: $login-button-border-radius;
+    background: $google-icon-bg;
+}
+
+#google-icon {
+    height: $google-icon-size;
+    width: $google-icon-size;
+}
+
+#login-button:hover {
+    background-color: $login-button-hover;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: 0.5s;
+}
