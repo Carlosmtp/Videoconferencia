@@ -1,0 +1,126 @@
+$common-border-radius: 2rem;
+$common-font-size: 1.5rem;
+$chat-primary-color: rgb(145, 202, 235);
+$placeholder-bg: black;
+$placeholder-color: white;
+$placeholder-border: 2px solid #555;
+$chat-textarea-bg: white;
+$send-button-bg: green;
+$send-button-hover: darkgreen;
+$send-button-color: white;
+
+
+@mixin flex-justify($justify-setting) {
+    display: flex;
+    justify-content: $justify-setting;
+}
+
+@mixin flex-justify-align($justify-setting, $align-setting){
+    @include flex-justify($justify-setting);
+    align-items: $align-setting;
+}
+
+.video-call-placeholder, 
+.video-call-buttons, 
+.video-call-chat {
+    margin: 0;
+    padding: 0;
+}
+
+.video-call-placeholder{
+    width: 80vw; 
+    height: 45vw; /* Keeps aspect ratio of 16:9 */
+    max-width: 1280px; 
+    max-height: 720px;
+    background-color: $placeholder-bg;
+    color: $placeholder-color;
+    @include flex-justify-align(center, center);
+    border: $placeholder-border;
+    border-radius: $common-border-radius;
+}
+
+
+.video-call-buttons{
+    height: 5rem;
+    @include flex-justify-align(center, top);
+    flex-grow: 1;
+    width: 80vw; 
+    max-width: 1280px; 
+    margin-top: 0;
+}
+
+
+.video-call-chat{
+    width: 40vw;
+    height: 45vw;
+    max-width: 320px;
+    max-height: 720px;
+    display: flex;
+    flex-direction: column;
+    font-size: $common-font-size;
+    padding: 0.5rem;
+    border-radius: $common-border-radius;
+    margin-bottom: 5rem;
+
+    &-history{
+        flex: 1;
+        max-width: 320px;
+        background-color: $chat-primary-color;
+        border-radius: $common-border-radius;
+        resize: none;
+        font-size: $common-font-size;
+        padding: 0.5rem;
+        &:hover{
+            cursor: default;
+        }
+    }
+
+    &-input-area{
+        @include flex-justify-align(space-between, center);
+        max-width: 320px;
+        background-color: $chat-primary-color;
+        border-radius: $common-border-radius;
+    }
+
+    &-input-textarea{
+        min-height: 3vw;
+        width: 100%;
+        height: auto;
+        background-color: $chat-textarea-bg;
+        font-size: $common-font-size;
+        border-radius: $common-border-radius;
+        resize: none;
+        padding: 0.5rem;
+        margin: 0.25rem;
+    }
+}
+
+
+.send-button{
+    width: 100px;
+    height: 3rem;
+    background-color: $send-button-bg;
+    color: $send-button-color;
+    border: none;
+    font-size: $common-font-size;
+    border-radius: $common-border-radius;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+
+    &:hover{
+        background-color: $send-button-hover;
+    }
+}
+
+
+.round-button{
+    width: 4rem;
+    height: 4rem;
+    border: none;
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+}

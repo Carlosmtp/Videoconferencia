@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+.description {
+  color: black;
+  font-weight: bold;
+}/*# sourceMappingURL=stylesNotFound.css.map */
