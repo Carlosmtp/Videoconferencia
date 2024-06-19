@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, updateDoc, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where, runTransaction, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase.config.ts";
 
 const usersRef = collection(db, "users");
@@ -13,7 +13,14 @@ const createUser = async (userData: { email: string; displayName: string | null;
             return { success: false, message: "User already exists" };
         }
 
-        await addDoc(usersRef, userData);
+        await runTransaction(db, async (transaction) => {
+            const userDocRef = doc(usersRef, userData.email); // Usar el email como ID
+            const userDoc = await transaction.get(userDocRef);
+            if (!userDoc.exists()) {
+                transaction.set(userDocRef, userData);
+            }
+        });
+
         return { success: true, message: "User created successfully" };
     } catch (error) {
         console.error("Error adding document: ", error);
