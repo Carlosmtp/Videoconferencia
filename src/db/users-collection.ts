@@ -1,9 +1,15 @@
-import { addDoc, collection, getDocs, query, where, runTransaction, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, getDocs, updateDoc, query, where, runTransaction, doc } from "firebase/firestore";
 import { db } from "../firebase/firebase.config.ts";
 
 const usersRef = collection(db, "users");
 
-const createUser = async (userData: { email: string; displayName: string | null; photoURL: string | null }) => {
+type UserData = {
+    email: string;
+    displayName: string | null;
+    photoURL: string | null;
+};
+
+const createUser = async (userData: UserData): Promise<{ success: boolean; message: string }> => {
     try {
         const userSnapshot = await getDocs(
             query(usersRef, where("email", "==", userData.email))
@@ -28,7 +34,7 @@ const createUser = async (userData: { email: string; displayName: string | null;
     }
 }
 
-const readUser = async (userEmail: string) => {
+const readUser = async (userEmail: string): Promise<{ success: boolean; data?: UserData; message?: string }> => {
     try {
         const userSnapshot = await getDocs(
             query(usersRef, where("email", "==", userEmail))
@@ -36,14 +42,14 @@ const readUser = async (userEmail: string) => {
         if (userSnapshot.empty) {
             return { success: false, message: "No user found" };
         }
-        const userData = userSnapshot.docs.map((doc) => doc.data());
+        const userData = userSnapshot.docs.map((doc) => doc.data() as UserData);
         return { success: true, data: userData[0] };
     } catch (error) {
         return { success: false, message: error.message };
     }
 }
 
-const editUser = async (userEmail: string, userData: { displayName?: string; photoURL?: string }) => {
+const editUser = async (userEmail: string, userData: Partial<UserData>): Promise<{ success: boolean; message: string }> => {
     try {
         const userSnapshot = await getDocs(
             query(usersRef, where("email", "==", userEmail))

@@ -5,7 +5,6 @@ import "./stylesDashboard.css";
 import "../stylesGeneral.css";
 import { createUser, readUser } from "../../db/users-collection.ts";
 
-// Define el tipo para el usuario
 type UserType = {
     displayName: string | null;
     email: string | null;
@@ -16,35 +15,44 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const auth = useAuth();
     const [userCreated, setUserCreated] = useState(false);
-    const [loading, setLoading] = useState(true); // Estado de carga para evitar llamadas repetitivas
+    const [userData, setUserData] = useState<UserType | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const saveDataUser = async (valuesUser) => {
-        const response = await createUser(valuesUser);
+    const saveDataUser = async (valuesUser: UserType) => {
+        const response = await createUser(valuesUser as { email: string; displayName: string | null; photoURL: string | null });
         if (response.success) {
             setUserCreated(true);
         }
     };
 
-    const readDataUser = async (email) => {
-        await readUser(email).then((res) => console.log(res))
-        .catch((error) => console.error(error));
+    const readDataUser = async (email: string) => {
+        const response = await readUser(email);
+        if (response.success && response.data) {
+            setUserData(response.data);
+            setUserCreated(true);
+        }
     };
 
     const handleUserCreation = useCallback(async () => {
         if (auth.userLogged) {
             const { displayName, email, photoURL } = auth.userLogged;
 
-            const response = await readUser(email);
+            const response = await readUser(email!);
             if (!response.success) {
                 await saveDataUser({
                     displayName: displayName,
                     email: email,
                     photoURL: photoURL
                 });
-            } else {
-                setUserCreated(true); // Marca como creado si ya existe
+                setUserData({
+                    displayName: displayName,
+                    email: email,
+                    photoURL: photoURL
+                });
+            } else if (response.data) {
+                setUserData(response.data); // Usa los datos de la base de datos si el usuario ya existe
+                setUserCreated(true);
             }
-            readDataUser(email);
         }
     }, [auth.userLogged]);
 
@@ -71,15 +79,19 @@ export default function Dashboard() {
         }
     };
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="container">
             <div className="header">
                 <h1 className="main-title">Welcome</h1>
-                {auth.userLogged?.photoURL && (
-                    <img src={auth.userLogged.photoURL} alt="User" className="user-photo" id="dash-user-photo"/>
+                {userData?.photoURL && (
+                    <img src={userData.photoURL} alt="User" className="user-photo" id="dash-user-photo"/>
                 )}
-                {auth.userLogged?.displayName && (
-                    <span className="sub-title">{auth.userLogged.displayName}</span>
+                {userData?.displayName && (
+                    <span className="sub-title">{userData.displayName}</span>
                 )}
             </div>
             <div className="flex center-item">
