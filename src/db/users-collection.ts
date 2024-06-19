@@ -1,31 +1,55 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, updateDoc, query, where } from "firebase/firestore";
 import { db } from "../firebase/firebase.config.ts";
-import { query, where } from "firebase/firestore";
 
-const usersRef = collection(db, "users")
+const usersRef = collection(db, "users");
 
-const createUser = async (userData) => {
+const createUser = async (userData: { email: string; displayName: string | null; photoURL: string | null }) => {
     try {
-        await addDoc(usersRef, userData)
+        const userSnapshot = await getDocs(
+            query(usersRef, where("email", "==", userData.email))
+        );
+
+        if (!userSnapshot.empty) {
+            return { success: false, message: "User already exists" };
+        }
+
+        await addDoc(usersRef, userData);
+        return { success: true, message: "User created successfully" };
     } catch (error) {
-        console.error("Error adding document: ", error)
+        console.error("Error adding document: ", error);
+        return { success: false, message: error.message };
     }
 }
 
-const readUser = async (userEmail) => {
+const readUser = async (userEmail: string) => {
     try {
         const userSnapshot = await getDocs(
             query(usersRef, where("email", "==", userEmail))
         );
         if (userSnapshot.empty) {
-            return { sucess: false, message: "No user found" }
+            return { success: false, message: "No user found" };
         }
         const userData = userSnapshot.docs.map((doc) => doc.data());
-        console.log(userData)
-        return { sucess: true, data: userData }
+        return { success: true, data: userData[0] };
     } catch (error) {
-        return { sucess: false, message: error }
+        return { success: false, message: error.message };
     }
 }
 
-export { createUser, readUser }
+const editUser = async (userEmail: string, userData: { displayName?: string; photoURL?: string }) => {
+    try {
+        const userSnapshot = await getDocs(
+            query(usersRef, where("email", "==", userEmail))
+        );
+        if (userSnapshot.empty) {
+            return { success: false, message: "No user found" };
+        }
+        const userDoc = userSnapshot.docs[0];
+        await updateDoc(userDoc.ref, userData);
+        return { success: true, message: "User updated" };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+export { createUser, readUser, editUser };

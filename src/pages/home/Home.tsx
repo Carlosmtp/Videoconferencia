@@ -8,6 +8,8 @@ import { BsGoogle } from "react-icons/bs";
 export default function Home() {
     const navigate = useNavigate();
     const auth = useAuth();
+    
+
     const onHandleLogin = async () => {
         await auth.loginWithGoogle().then(() => {
             navigate("/dashboard");
