@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import "./stylesVideoCall.css";
 // import { MdCall } from "react-icons/md";
@@ -9,6 +9,7 @@ import { FaMicrophoneSlash } from "react-icons/fa";
 import { BsFillCameraVideoOffFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
 
+import { socketServer } from "../../socket/server-websockets";
 
 
 
@@ -16,15 +17,30 @@ export default function VideoCall(){
     const chatHistoryRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLTextAreaElement>(null);
 
+
     function onHandleSend(){
         if (messageRef.current!.value === "" || 
                 messageRef.current!.value === "\n"){
             messageRef.current!.value = "";
             return;
         }
-        chatHistoryRef.current!.value += messageRef.current!.value + "\n";
+        const newMessage = messageRef.current!.value;
+        socketServer.emit("new-message", newMessage);
         messageRef.current!.value = "";
     }
+
+    useEffect(() => {
+        const handleMessage = (message: string) => {
+            chatHistoryRef.current!.value += message + "\n";
+        };
+
+        socketServer.on("new-message", handleMessage);
+
+        // Cleanup function to remove the event listener
+        return () => {
+            socketServer.off("new-message", handleMessage);
+        };
+    }, []);
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -54,7 +70,7 @@ export default function VideoCall(){
                     </div>
                 </div>
                 <div className="video-call-chat">
-                    <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly></textarea>
+                    <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
                     <div className="video-call-chat-input-area">
                         <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
                         <button onClick={onHandleSend} className="send-button background-color-green color-white">
