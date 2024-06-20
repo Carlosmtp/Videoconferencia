@@ -1,17 +1,14 @@
 import React, {useEffect, useRef, useState, useCallback} from "react";
-import { useNavigate } from "react-router-dom";
 import "./stylesVideoCall.css";
-// import { MdCall } from "react-icons/md";
 import { MdCallEnd } from "react-icons/md";
-// import { FaMicrophone } from "react-icons/fa";
 import { FaMicrophoneSlash } from "react-icons/fa";
-// import { BsFillCameraVideoFill } from "react-icons/bs";
 import { BsFillCameraVideoOffFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
-
+import { useAuth } from "../../context/AuthContext.tsx"
 import { socketServer } from "../../socket/server-websockets";
-import { useAuth } from "../../context/AuthContext.tsx";
-import { createUser, readUser } from "../../db/users-collection.ts";
+import { useSelector, useDispatch } from "react-redux";
+import { Navigate, useNavigate } from "react-router-dom";
+import { setUser } from "../../redux/userSlice.ts";
 
 
 type UserType = {
@@ -21,52 +18,14 @@ type UserType = {
 };
 
 export default function VideoCall(){
+    const auth = useAuth();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const chatHistoryRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLTextAreaElement>(null);
 
+    const user = useSelector((state: { user: any }) => state.user);
 
-    const auth = useAuth();
-    const [userCreated, setUserCreated] = useState(false);
-    const [userData, setUserData] = useState<UserType | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    const saveDataUser = async (valuesUser: UserType) => {
-        const response = await createUser(valuesUser as { email: string; displayName: string | null; photoURL: string | null });
-        if (response.success) {
-            setUserCreated(true);
-        }
-    };
-
-    const readDataUser = async (email: string) => {
-        const response = await readUser(email);
-        if (response.success && response.data) {
-            setUserData(response.data);
-            setUserCreated(true);
-        }
-    };
-
-    const handleUserCreation = useCallback(async () => {
-        if (auth.userLogged) {
-            const { displayName, email, photoURL } = auth.userLogged;
-
-            const response = await readUser(email!);
-            if (!response.success) {
-                await saveDataUser({
-                    displayName: displayName,
-                    email: email,
-                    photoURL: photoURL
-                });
-                setUserData({
-                    displayName: displayName,
-                    email: email,
-                    photoURL: photoURL
-                });
-            } else if (response.data) {
-                setUserData(response.data); // Usa los datos de la base de datos si el usuario ya existe
-                setUserCreated(true);
-            }
-        }
-    }, [auth.userLogged]);
 
 
     function onHandleSend(){
@@ -81,20 +40,19 @@ export default function VideoCall(){
     }
 
     useEffect(() => {
-        if (auth.userLogged && !userCreated && loading) {
-            handleUserCreation().finally(() => setLoading(false));
+        if (user.email === ""){
+            navigate("/dashboard")
         }
         const handleMessage = (message: string) => {
-            chatHistoryRef.current!.value += String( userData?.displayName?.split(" ")[0] ) + ":" + message + "\n";
+            chatHistoryRef.current!.value += String( user.name.split(" ")[0] ) + ":" + message + "\n";
         };
 
         socketServer.on("new-message", handleMessage);
 
-        // Cleanup function to remove the event listener
         return () => {
             socketServer.off("new-message", handleMessage);
         };
-    }, [auth.userLogged, userCreated, loading, handleUserCreation]);
+    }, []);
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
