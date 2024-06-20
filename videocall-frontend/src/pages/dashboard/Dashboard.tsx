@@ -13,10 +13,12 @@ type UserType = {
     photoURL: string | null;
 };
 
+
+
 export default function Dashboard() {
     const navigate = useNavigate();
     const auth = useAuth();
-    const user = useSelector((state: { user: UserType }) => state.user);
+    const user = useSelector((state: { user: any }) => state.user);
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
 
