@@ -5,7 +5,7 @@ import "./stylesDashboard.css";
 import "../stylesGeneral.css";
 import { createUser, readUser } from "../../db/users-collection.ts";
 import { useSelector, useDispatch } from "react-redux";
-import { setUser } from "../../redux/userSlice.ts"; // Asegúrate de importar la acción correcta
+import { setUser } from "../../redux/userSlice.ts";
 
 type UserType = {
     displayName: string | null;
