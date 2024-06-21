@@ -10,6 +10,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { setUser } from "../../redux/userSlice.ts";
 
+import { init } from "../../socket/server-webrtc.js"; 
+
 
 type UserType = {
     displayName: string | null;
@@ -37,6 +39,12 @@ export default function VideoCall(){
         const newMessage = messageRef.current!.value;
         socketServer.emit("new-message", newMessage);
         messageRef.current!.value = "";
+    }
+
+    const onHandleToggleMic = (e) => {
+        e.preventDefault();
+        console.log("Mic toggled");
+        init();
     }
 
     useEffect(() => {
@@ -76,7 +84,7 @@ export default function VideoCall(){
                         <button className="round-button color-black hover-red">
                             <BsFillCameraVideoOffFill />{/* Activate/Deactivate camera */}
                         </button>
-                        <button className="round-button color-black hover-red">
+                        <button onClick={ onHandleToggleMic } className="round-button color-black hover-red">
                             <FaMicrophoneSlash />{/* Activate/Deactivate Mic */}
                         </button>
                     </div>
