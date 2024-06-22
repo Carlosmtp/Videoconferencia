@@ -9,7 +9,7 @@ import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCal
 import { setUser } from "../../redux/userSlice.ts";
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const videoCallsocket = io('http://localhost:5001');
 
 type UserType = {
     displayName: string | null;
@@ -58,13 +58,13 @@ export default function Dashboard() {
             handleUserCreation().finally(() => setLoading(false));
         }
 
-        socket.on('full-house', () => {
+        videoCallsocket.on('full-house', () => {
             setIsRoomFull(true);
             alert('The video call room is full. Please try again later.');
         });
 
         return () => {
-            socket.off('full-house');
+            videoCallsocket.off('full-house');
         };
     }, [auth.userLogged, loading, handleUserCreation]);
 
@@ -73,14 +73,14 @@ export default function Dashboard() {
     };
 
     const onHandleVideoCall = () => {
-        socket.emit('check-room-status');
+        videoCallsocket.emit('check-room-status');
 
-        socket.once('room-full', () => {
+        videoCallsocket.once('room-full', () => {
             setIsRoomFull(true);
             alert("The video call room is full. Please try again later.");
         });
 
-        socket.once('room-available', () => {
+        videoCallsocket.once('room-available', () => {
             setIsRoomFull(false);
             navigate("/video-call");
         });

@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const chatSocket = io('http://localhost:5000');
+const videoCallSocket = io('http://localhost:5001');
 
 export default function VideoCall() {
     const auth = useAuth();
@@ -35,27 +36,32 @@ export default function VideoCall() {
             dispatch(setCallStarted(true));
         }
 
-        socket.emit("data-user", {
+        chatSocket.emit("data-user", {
+            name: user.name,
+            email: user.email,
+            photoURL: user.photoURL
+        });
+        videoCallSocket.emit("data-user", {
             name: user.name,
             email: user.email,
             photoURL: user.photoURL
         });
 
-        socket.on('offer', async (data) => {
+        videoCallSocket.on('offer', async (data) => {
             try {
                 if (!pc) return;
                 
                 await pc.setRemoteDescription(new RTCSessionDescription(data));
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
-                socket.emit('answer', answer);
+                videoCallSocket.emit('answer', answer);
             } catch (error) {
                 console.error('Error handling offer:', error);
             }
         });
         
 
-        socket.on('answer', async (data) => {
+        videoCallSocket.on('answer', async (data) => {
             try {
                 if (!pc) return;
                 
@@ -65,7 +71,7 @@ export default function VideoCall() {
             }
         });
 
-        socket.on('candidate', async (data) => {
+        videoCallSocket.on('candidate', async (data) => {
             try {
                 if (!pc) return;
                 
@@ -79,10 +85,10 @@ export default function VideoCall() {
             chatHistoryRef.current!.value += `${message}\n`;
         };
 
-        socket.on("new-message", handleMessage);
+        chatSocket.on("new-message", handleMessage);
 
         return () => {
-            socket.off("new-message", handleMessage);
+            chatSocket.off("new-message", handleMessage);
         };
     }, [pc, user.email, navigate]);
 
@@ -93,7 +99,7 @@ export default function VideoCall() {
 
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
-                socket.emit('candidate', event.candidate);
+                videoCallSocket.emit('candidate', event.candidate);
             }
         };
 
@@ -115,7 +121,7 @@ export default function VideoCall() {
 
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            socket.emit('offer', offer);
+            videoCallSocket.emit('offer', offer);
         } catch (error) {
             console.error('Error starting call:', error);
         }
@@ -203,7 +209,7 @@ export default function VideoCall() {
             return;
         }
         const newMessage = messageRef.current!.value;
-        socket.emit("new-message", newMessage);
+        chatSocket.emit("new-message", newMessage);
         messageRef.current!.value = "";
     };
 
