@@ -4,7 +4,8 @@
   "description": "Chat EISC client",
   "main": "index.js",
   "scripts": {
-    "dev": "react-scripts start"
+    "dev": "react-scripts start",
+    "build": "react-scripts build"
   },
   "author": "Diego Ledesma, Carlos Tovar",
   "license": "ISC",
