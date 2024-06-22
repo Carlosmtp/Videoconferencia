@@ -6,6 +6,11 @@ import { useAuth } from "../../context/AuthContext.tsx"
 import { BsGoogle } from "react-icons/bs";
 
 export default function Home() {
+
+    if (localStorage.getItem("isAuthenticated") === "true") {
+        const navigate = useNavigate();
+        navigate("/dashboard");
+    }
     const navigate = useNavigate();
     const auth = useAuth();
     
@@ -13,6 +18,7 @@ export default function Home() {
     const onHandleLogin = async () => {
         await auth.loginWithGoogle().then(() => {
             navigate("/dashboard");
+            localStorage.setItem("isAuthenticated", "true");
         }).catch((error) => {
             console.log(error);
         });

@@ -5,7 +5,11 @@ import "./stylesDashboard.css";
 import "../stylesGeneral.css";
 import { createUser, readUser } from "../../db/users-collection.ts";
 import { useSelector, useDispatch } from "react-redux";
+import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
 import { setUser } from "../../redux/userSlice.ts";
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 type UserType = {
     displayName: string | null;
@@ -13,14 +17,13 @@ type UserType = {
     photoURL: string | null;
 };
 
-
-
 export default function Dashboard() {
     const navigate = useNavigate();
     const auth = useAuth();
     const user = useSelector((state: { user: any }) => state.user);
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const [isRoomFull, setIsRoomFull] = useState(false);
 
     const saveDataUser = async (valuesUser: UserType) => {
         const response = await createUser(valuesUser as { email: string; displayName: string | null; photoURL: string | null });
@@ -29,6 +32,9 @@ export default function Dashboard() {
 
     const handleUserCreation = useCallback(async () => {
         if (auth.userLogged) {
+            dispatch(setCallStarted(false));
+            dispatch(setCamStatus(true));
+            dispatch(setMicStatus(true));
             const { displayName, email, photoURL } = auth.userLogged;
 
             const response = await readUser(email!);
@@ -42,7 +48,7 @@ export default function Dashboard() {
                     dispatch(setUser({ displayName, email, photoURL }));
                 }
             } else if (response.data) {
-                dispatch(setUser(response.data)); // Usa los datos de la base de datos si el usuario ya existe
+                dispatch(setUser(response.data)); 
             }
         }
     }, [auth.userLogged, dispatch]);
@@ -51,6 +57,15 @@ export default function Dashboard() {
         if (auth.userLogged && loading) {
             handleUserCreation().finally(() => setLoading(false));
         }
+
+        socket.on('full-house', () => {
+            setIsRoomFull(true);
+            alert('The video call room is full. Please try again later.');
+        });
+
+        return () => {
+            socket.off('full-house');
+        };
     }, [auth.userLogged, loading, handleUserCreation]);
 
     const onHandleChat = () => {
@@ -58,7 +73,17 @@ export default function Dashboard() {
     };
 
     const onHandleVideoCall = () => {
-        navigate("/video-call");
+        socket.emit('check-room-status');
+
+        socket.once('room-full', () => {
+            setIsRoomFull(true);
+            alert("The video call room is full. Please try again later.");
+        });
+
+        socket.once('room-available', () => {
+            setIsRoomFull(false);
+            navigate("/video-call");
+        });
     };
 
     const onHandleButtonLogout = async () => {

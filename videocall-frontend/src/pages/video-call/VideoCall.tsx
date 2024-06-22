@@ -1,83 +1,236 @@
-import React, {useEffect, useRef, useState, useCallback} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./stylesVideoCall.css";
 import { MdCallEnd } from "react-icons/md";
-import { FaMicrophoneSlash } from "react-icons/fa";
-import { BsFillCameraVideoOffFill } from "react-icons/bs";
+import { FaMicrophoneSlash, FaMicrophone } from "react-icons/fa";
+import { BsFillCameraVideoOffFill, BsFillCameraVideoFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
-import { useAuth } from "../../context/AuthContext.tsx"
-import { socketServer } from "../../socket/server-websockets";
+import { useAuth } from "../../context/AuthContext.tsx";
 import { useSelector, useDispatch } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
-import { setUser } from "../../redux/userSlice.ts";
+import { useNavigate } from "react-router-dom";
+import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
+import io from 'socket.io-client';
 
+const socket = io('http://localhost:5000');
 
-type UserType = {
-    displayName: string | null;
-    email: string | null;
-    photoURL: string | null;
-};
-
-export default function VideoCall(){
+export default function VideoCall() {
     const auth = useAuth();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const chatHistoryRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLTextAreaElement>(null);
-
+    const localVideoRef = useRef<HTMLVideoElement>(null);
+    const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const user = useSelector((state: { user: any }) => state.user);
+    const videoCall = useSelector((state: { videoCall: any }) => state.videoCall);
+    const [pc, setPc] = useState<RTCPeerConnection | null>(null);
+    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
+    useEffect(() => {
+        if (user.email === "") {
+            navigate("/dashboard");
+        }
+        if (!videoCall.callStarted) {
+            console.log("Starting call");
+            startCall();
+            dispatch(setCallStarted(true));
+        }
 
+        socket.emit("data-user", {
+            name: user.name,
+            email: user.email,
+            photoURL: user.photoURL
+        });
 
-    function onHandleSend(){
-        if (messageRef.current!.value === "" || 
-                messageRef.current!.value === "\n"){
+        socket.on('offer', async (data) => {
+            try {
+                if (!pc) return;
+                
+                await pc.setRemoteDescription(new RTCSessionDescription(data));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                socket.emit('answer', answer);
+            } catch (error) {
+                console.error('Error handling offer:', error);
+            }
+        });
+        
+
+        socket.on('answer', async (data) => {
+            try {
+                if (!pc) return;
+                
+                await pc.setRemoteDescription(new RTCSessionDescription(data));
+            } catch (error) {
+                console.error('Error handling answer:', error);
+            }
+        });
+
+        socket.on('candidate', async (data) => {
+            try {
+                if (!pc) return;
+                
+                await pc.addIceCandidate(new RTCIceCandidate(data));
+            } catch (error) {
+                console.error('Error handling ICE candidate:', error);
+            }
+        });
+
+        const handleMessage = (message) => {
+            chatHistoryRef.current!.value += `${message}\n`;
+        };
+
+        socket.on("new-message", handleMessage);
+
+        return () => {
+            socket.off("new-message", handleMessage);
+        };
+    }, [pc, user.email, navigate]);
+
+    const startCall = async () => {
+        localStorage.setItem("inCall", "true");
+        const peerConnection = new RTCPeerConnection();
+        setPc(peerConnection);
+
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                socket.emit('candidate', event.candidate);
+            }
+        };
+
+        peerConnection.ontrack = (event) => {
+            if (remoteVideoRef.current){
+                remoteVideoRef.current.srcObject = event.streams[0];
+            }
+        };
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            setLocalStream(stream);
+            stream.getTracks().forEach((track) => {
+                peerConnection.addTrack(track, stream);
+            });
+            if (localVideoRef.current){
+                localVideoRef.current.srcObject = stream;
+            }
+
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('offer', offer);
+        } catch (error) {
+            console.error('Error starting call:', error);
+        }
+    };
+
+    const endCall = async () => {
+        if (pc) {
+            console.log("Ending call");
+            pc.getSenders().forEach(sender => {
+                if (sender.track) {
+                    sender.track.stop();
+                }
+            });
+            pc.getReceivers().forEach(receiver => {
+                if (receiver.track) {
+                    receiver.track.stop();
+                }
+            });
+            pc.close();
+            setPc(null);
+        }
+
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
+        }
+
+        if (localVideoRef.current && localVideoRef.current.srcObject) {
+            const localStream = localVideoRef.current.srcObject as MediaStream;
+            localStream.getTracks().forEach(track => track.stop());
+            localVideoRef.current.srcObject = null;
+        }
+
+        if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
+            const remoteStream = remoteVideoRef.current.srcObject as MediaStream;
+            remoteStream.getTracks().forEach(track => track.stop());
+            remoteVideoRef.current.srcObject = null;
+        }
+        dispatch(setCallStarted(false));
+        dispatch(setCamStatus(true));
+        dispatch(setMicStatus(true));
+        navigate("/dashboard");
+        window.location.reload();
+    };
+
+    const deactivateCamera = async () => {
+        if (localStream) {
+            localStream.getVideoTracks().forEach(track => {
+                track.enabled = false;
+            });
+        }
+        dispatch(setCamStatus(false));
+    }
+
+    const activateCamera = () => {
+        if (localStream) {
+            localStream.getVideoTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+        }
+        dispatch(setCamStatus(true));
+    }
+
+    const deactivateMic = () => {
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+        }
+        dispatch(setMicStatus(false));
+    }
+
+    const activateMic = () => {
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+        }
+        dispatch(setMicStatus(true));
+    }
+
+    const handleSend = () => {
+        if (messageRef.current!.value === "" || messageRef.current!.value === "\n") {
             messageRef.current!.value = "";
             return;
         }
         const newMessage = messageRef.current!.value;
-        socketServer.emit("new-message", newMessage);
+        socket.emit("new-message", newMessage);
         messageRef.current!.value = "";
-    }
-
-    useEffect(() => {
-        if (user.email === ""){
-            navigate("/dashboard")
-        }
-        const handleMessage = (message: string) => {
-            chatHistoryRef.current!.value += String( user.name.split(" ")[0] ) + ":" + message + "\n";
-        };
-
-        socketServer.on("new-message", handleMessage);
-
-        return () => {
-            socketServer.off("new-message", handleMessage);
-        };
-    }, []);
+    };
 
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
-            onHandleSend();
+            handleSend();
         }
     };
 
-    return(
+    return (
         <div className="container">
             <div className="flex center-item margin-bottom-0">
-                
                 <div className="video-and-buttons">
                     <div className="video-call-placeholder">
-                        <p>No active video call</p>
+                        <video ref={localVideoRef} autoPlay playsInline muted />
+                        <video ref={remoteVideoRef} autoPlay playsInline />
                     </div>
                     <div className="video-call-buttons">
-                        <button className="round-button color-black hover-red">
-                            <MdCallEnd />{/* Start/Finish Video Call */} 
+                        <button onClick={endCall} className="round-button color-black hover-red">
+                            <MdCallEnd />
                         </button>
-                        <button className="round-button color-black hover-red">
-                            <BsFillCameraVideoOffFill />{/* Activate/Deactivate camera */}
+                        <button onClick={videoCall.camStatus ? deactivateCamera : activateCamera} className={ videoCall.camStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                            {videoCall.camStatus ? <BsFillCameraVideoFill /> : <BsFillCameraVideoOffFill />}
                         </button>
-                        <button className="round-button color-black hover-red">
-                            <FaMicrophoneSlash />{/* Activate/Deactivate Mic */}
+                        <button onClick={videoCall.micStatus? deactivateMic : activateMic} className={ videoCall.micStatus? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                            {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
                         </button>
                     </div>
                 </div>
@@ -85,12 +238,12 @@ export default function VideoCall(){
                     <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
                     <div className="video-call-chat-input-area">
                         <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
-                        <button onClick={onHandleSend} className="send-button background-color-green color-white">
+                        <button onClick={handleSend} className="send-button background-color-green color-white">
                             <IoSend />
                         </button>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
-    )
+    );
 }
