@@ -8,10 +8,12 @@ import { useAuth } from "../../context/AuthContext.tsx";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
+
 import io from 'socket.io-client';
 
-const chatSocket = io('http://localhost:5000');
-const videoCallSocket = io('http://localhost:5001');
+
+const chatSocket = io(process.env.REACT_APP_CHAT_SOCKET_SERVER_URL as string);
+const videoCallSocket = io(process.env.REACT_APP_VIDEO_SOCKET_SERVER_URL as string);
 
 export default function VideoCall() {
     const auth = useAuth();

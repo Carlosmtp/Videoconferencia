@@ -1,12 +1,11 @@
 const { Server } = require('socket.io');
-
-const urlClientLocalHost = 'http://localhost:3000';
-const urlClientDeploy = ''; // pending: api url of the client deploy, e.g. https://chat-eisc.vercel.app
-const port = 5001;
+require('dotenv').config();
+const urlClient = process.env.FRONTEND_URL;
+const port = process.env.PORT || 5001;
 
 const io = new Server({
     cors: {
-        origin: [urlClientLocalHost, urlClientDeploy],
+        origin: [urlClient],
     },
 });
 

@@ -9,7 +9,8 @@ import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCal
 import { setUser } from "../../redux/userSlice.ts";
 import io from 'socket.io-client';
 
-const videoCallsocket = io('http://localhost:5001');
+
+const videoCallsocket = io(process.env.REACT_APP_VIDEO_SOCKET_SERVER_URL as string);
 
 type UserType = {
     displayName: string | null;
