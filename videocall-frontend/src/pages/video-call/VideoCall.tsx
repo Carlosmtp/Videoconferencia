@@ -37,7 +37,6 @@ export default function VideoCall() {
             credential: turnServerCredential
         }
     ];
-    console.log(ICE_SERVER);
 
     useEffect(() => {
         if (user.email === "") {
@@ -108,7 +107,6 @@ export default function VideoCall() {
     const startCall = async () => {
         localStorage.setItem("inCall", "true");
         const peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVER});
-        //const peerConnection = new RTCPeerConnection();
         setPc(peerConnection);
 
         peerConnection.onicecandidate = (event) => {
