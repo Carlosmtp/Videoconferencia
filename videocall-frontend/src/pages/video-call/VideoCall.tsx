@@ -14,6 +14,9 @@ import io from 'socket.io-client';
 
 const chatSocket = io(process.env.REACT_APP_CHAT_SOCKET_SERVER_URL as string);
 const videoCallSocket = io(process.env.REACT_APP_VIDEO_SOCKET_SERVER_URL as string);
+const turnServer = process.env.REACT_APP_TURN_SERVER_URL as string;
+const turnServerUsername = process.env.REACT_APP_TURN_SERVER_USERNAME as string;
+const turnServerCredential = process.env.REACT_APP_TURN_SERVER_CREDENTIAL as string;
 
 export default function VideoCall() {
     const auth = useAuth();
@@ -27,6 +30,14 @@ export default function VideoCall() {
     const videoCall = useSelector((state: { videoCall: any }) => state.videoCall);
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+    const ICE_SERVER: RTCIceServer[] = [
+        { 
+            urls: [turnServer],
+            username: turnServerUsername,
+            credential: turnServerCredential
+        }
+    ];
+    console.log(ICE_SERVER);
 
     useEffect(() => {
         if (user.email === "") {
@@ -96,7 +107,8 @@ export default function VideoCall() {
 
     const startCall = async () => {
         localStorage.setItem("inCall", "true");
-        const peerConnection = new RTCPeerConnection();
+        const peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVER});
+        //const peerConnection = new RTCPeerConnection();
         setPc(peerConnection);
 
         peerConnection.onicecandidate = (event) => {
