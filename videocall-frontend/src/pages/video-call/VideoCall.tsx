@@ -27,6 +27,11 @@ export default function VideoCall() {
     const videoCall = useSelector((state: { videoCall: any }) => state.videoCall);
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+    const [isChatVisible, setIsChatVisible] = useState(false); // State to manage chat visibility
+
+    const toggleChatVisibility = () => {
+        setIsChatVisible(!isChatVisible);
+    };
 
     useEffect(() => {
         if (user.email === "") {
@@ -224,13 +229,24 @@ export default function VideoCall() {
 
     return (
         <div className="container">
-            <div className="flex center-item margin-bottom-0">
+            <div className="video-call-and-chat flex margin-bottom-0">
                 <div className="video-and-buttons">
                     <div className="video-call-placeholder">
-                        <video ref={localVideoRef} autoPlay playsInline muted />
-                        <video ref={remoteVideoRef} autoPlay playsInline />
+                        <video className="local-video" ref={localVideoRef} autoPlay playsInline muted></video>
+                        <video className="remote-video" ref={remoteVideoRef} autoPlay playsInline />
+                        <div className="video-call-buttons">
+                            <button onClick={endCall} className="round-button color-black hover-red">
+                                <MdCallEnd />
+                            </button>
+                            <button onClick={videoCall.camStatus ? deactivateCamera : activateCamera} className={ videoCall.camStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                                {videoCall.camStatus ? <BsFillCameraVideoFill /> : <BsFillCameraVideoOffFill />}
+                            </button>
+                            <button onClick={videoCall.micStatus? deactivateMic : activateMic} className={ videoCall.micStatus? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                                {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
+                            </button>
+                        </div>
                     </div>
-                    <div className="video-call-buttons">
+                    {/* <div className="video-call-buttons">
                         <button onClick={endCall} className="round-button color-black hover-red">
                             <MdCallEnd />
                         </button>
@@ -240,9 +256,9 @@ export default function VideoCall() {
                         <button onClick={videoCall.micStatus? deactivateMic : activateMic} className={ videoCall.micStatus? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
                             {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
                         </button>
-                    </div>
+                    </div> */}
                 </div>
-                <div className="video-call-chat">
+                {/* <div className="video-call-chat">
                     <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
                     <div className="video-call-chat-input-area">
                         <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
@@ -250,7 +266,36 @@ export default function VideoCall() {
                             <IoSend />
                         </button>
                     </div>
-                </div>
+                </div> */}
+                {isChatVisible ? (
+                    <div className="video-call-chat">
+                        <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
+                        <div className="video-call-chat-input-area">
+                            <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
+                            <button onClick={handleSend} className="send-button background-color-green color-white">
+                                <IoSend />
+                            </button>
+                        </div>
+                        <button onClick={toggleChatVisibility} className="collapse-chat-button">
+                            Collapse Chat
+                        </button>
+                    </div>
+                ) : (
+                    <div className="small-chat-button">
+                        <div className="video-call-chat chat-set-invisible">
+                            <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
+                            <div className="video-call-chat-input-area">
+                                <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
+                                <button onClick={handleSend} className="send-button background-color-green color-white">
+                                    <IoSend />
+                                </button>
+                            </div>
+                        </div>
+                        <button onClick={toggleChatVisibility} className="expand-chat-button ">
+                            Show Chat
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

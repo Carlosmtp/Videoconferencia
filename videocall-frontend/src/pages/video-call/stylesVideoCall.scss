@@ -1,9 +1,10 @@
 $common-border-radius: 2rem;
 $common-font-size: 1.5rem;
 $chat-primary-color: rgb(145, 202, 235);
-$placeholder-bg: black;
+$placeholder-bg: white;
 $placeholder-color: white;
-$placeholder-border: 2px solid #555;
+// $placeholder-border: 2px solid #555;
+$placeholder-border: 2px solid white;
 $chat-textarea-bg: white;
 $send-button-bg: green;
 $send-button-hover: darkgreen;
@@ -20,39 +21,116 @@ $send-button-color: white;
     align-items: $align-setting;
 }
 
+.video-call-and-chat{
+    max-width: 95%;
+}
+
 .video-call-placeholder, 
 .video-call-buttons, 
 .video-call-chat {
+    max-width: 95%;
     margin: 0;
     padding: 0;
 }
 
 .video-call-placeholder{
-    width: 80vw; 
-    height: 45vw; /* Keeps aspect ratio of 16:9 */
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    // width: 80vw; 
+    // height: 45vw; /* Keeps aspect ratio of 16:9 */
+    width: auto;
     max-width: 1280px; 
     max-height: 720px;
     background-color: $placeholder-bg;
     color: $placeholder-color;
-    @include flex-justify-align(center, center);
+    // @include flex-justify-align(center, center); mediaquery
     border: $placeholder-border;
+    border-radius: $common-border-radius;
+}
+
+.local-video, .remote-video{
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    object-fit: cover;
     border-radius: $common-border-radius;
 }
 
 
 .video-call-buttons{
     height: 5rem;
-    @include flex-justify-align(center, top);
+    @include flex-justify-align(center, center);
     flex-grow: 1;
     width: 80vw; 
     max-width: 1280px; 
     margin-top: 0;
+    position: absolute;
+    z-index: 10;
 }
 
 
+
+
+.send-button{
+    width: 100px;
+    height: 3rem;
+    background-color: $send-button-bg;
+    color: $send-button-color;
+    border: none;
+    font-size: $common-font-size;
+    border-radius: $common-border-radius;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+
+    &:hover{
+        background-color: $send-button-hover;
+    }
+}
+
+
+.round-button{
+    width: 4rem;
+    height: 4rem;
+    border: none;
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+}
+
+.expand-chat-button,
+.collapse-chat-button {
+    display: none;
+
+
+    background-color: $send-button-bg;
+    color: $send-button-color;
+    border: none;
+    font-size: $common-font-size;
+    border-radius: $common-border-radius;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+        background-color: $send-button-hover;
+    }
+}
+
 .video-call-chat{
-    width: 40vw;
-    height: 45vw;
+    // width: 40vw;
+    // height: 45vw;
+    // height: auto;
+    height: 100%;
+
+    width: auto;
+    // position: absolute;
+    // z-index: 10;
+
     max-width: 320px;
     max-height: 720px;
     display: flex;
@@ -62,7 +140,10 @@ $send-button-color: white;
     border-radius: $common-border-radius;
     margin-bottom: 5rem;
 
+
     &-history{
+        height: 100%;
+
         flex: 1;
         max-width: 320px;
         background-color: $chat-primary-color;
@@ -95,32 +176,32 @@ $send-button-color: white;
     }
 }
 
-
-.send-button{
-    width: 100px;
-    height: 3rem;
-    background-color: $send-button-bg;
-    color: $send-button-color;
-    border: none;
-    font-size: $common-font-size;
-    border-radius: $common-border-radius;
-    cursor: pointer;
-    transition: 0.3s;
-    margin: 0.5rem;
-
-    &:hover{
-        background-color: $send-button-hover;
+@media (max-width: 1038px) {
+    .video-call-chat {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
-}
 
+    .expand-chat-button,
+    .collapse-chat-button {
+        display: block;
+    }
 
-.round-button{
-    width: 4rem;
-    height: 4rem;
-    border: none;
-    font-size: 2rem;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: 0.3s;
-    margin: 0.5rem;
+    .expand-chat-button,
+    .small-chat-button{
+        @include flex-justify-align(center, center);
+    }
+
+    .chat-set-invisible{
+        display: none;
+    }
 }

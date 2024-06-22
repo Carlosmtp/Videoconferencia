@@ -1,21 +1,34 @@
+.video-call-and-chat {
+  max-width: 95%;
+}
+
 .video-call-placeholder,
 .video-call-buttons,
 .video-call-chat {
+  max-width: 95%;
   margin: 0;
   padding: 0;
 }
 
 .video-call-placeholder {
-  width: 80vw;
-  height: 45vw; /* Keeps aspect ratio of 16:9 */
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  width: auto;
   max-width: 1280px;
   max-height: 720px;
-  background-color: black;
+  background-color: white;
   color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid #555;
+  border: 2px solid white;
+  border-radius: 2rem;
+}
+
+.local-video, .remote-video {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
   border-radius: 2rem;
 }
 
@@ -23,16 +36,63 @@
   height: 5rem;
   display: flex;
   justify-content: center;
-  align-items: top;
+  align-items: center;
   flex-grow: 1;
   width: 80vw;
   max-width: 1280px;
   margin-top: 0;
+  position: absolute;
+  z-index: 10;
+}
+
+.send-button {
+  width: 100px;
+  height: 3rem;
+  background-color: green;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 0.5rem;
+}
+.send-button:hover {
+  background-color: darkgreen;
+}
+
+.round-button {
+  width: 4rem;
+  height: 4rem;
+  border: none;
+  font-size: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 0.5rem;
+}
+
+.expand-chat-button,
+.collapse-chat-button {
+  display: none;
+  background-color: green;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+.expand-chat-button:hover,
+.collapse-chat-button:hover {
+  background-color: darkgreen;
 }
 
 .video-call-chat {
-  width: 40vw;
-  height: 45vw;
+  height: 100%;
+  width: auto;
   max-width: 320px;
   max-height: 720px;
   display: flex;
@@ -43,6 +103,7 @@
   margin-bottom: 5rem;
 }
 .video-call-chat-history {
+  height: 100%;
   flex: 1;
   max-width: 320px;
   background-color: rgb(145, 202, 235);
@@ -74,29 +135,31 @@
   margin: 0.25rem;
 }
 
-.send-button {
-  width: 100px;
-  height: 3rem;
-  background-color: green;
-  color: white;
-  border: none;
-  font-size: 1.5rem;
-  border-radius: 2rem;
-  cursor: pointer;
-  transition: 0.3s;
-  margin: 0.5rem;
-}
-.send-button:hover {
-  background-color: darkgreen;
-}
-
-.round-button {
-  width: 4rem;
-  height: 4rem;
-  border: none;
-  font-size: 2rem;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: 0.3s;
-  margin: 0.5rem;
+@media (max-width: 1038px) {
+  .video-call-chat {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .expand-chat-button,
+  .collapse-chat-button {
+    display: block;
+  }
+  .expand-chat-button,
+  .small-chat-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .chat-set-invisible {
+    display: none;
+  }
 }/*# sourceMappingURL=stylesVideoCall.css.map */
