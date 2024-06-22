@@ -235,13 +235,13 @@ export default function VideoCall() {
 
     return (
         <div className="container">
-            <div className="flex center-item margin-bottom-0">
-                <div className="video-and-buttons">
-                    <div className="video-call-placeholder">
-                        <video ref={localVideoRef} autoPlay playsInline muted />
-                        <video ref={remoteVideoRef} autoPlay playsInline />
+            <div className="video-call-section">
+                <div className="videoo-call-placeholder">
+                <video className = "video" ref={remoteVideoRef} autoPlay playsInline />
+                <video className = "local-video" ref={localVideoRef} autoPlay playsInline muted />
                     </div>
-                    <div className="video-call-buttons">
+                
+                    <div className="video-call-controls">
                         <button onClick={endCall} className="round-button color-black hover-red">
                             <MdCallEnd />
                         </button>
@@ -252,17 +252,14 @@ export default function VideoCall() {
                             {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
                         </button>
                     </div>
-                </div>
                 <div className="video-call-chat">
                     <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
-                    <div className="video-call-chat-input-area">
-                        <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
-                        <button onClick={handleSend} className="send-button background-color-green color-white">
-                            <IoSend />
-                        </button>
+                    <div className="video-call-chat-input">
+                        <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message"></textarea>
+                        <button onClick={handleSend} className="send-button"><IoSend /></button>
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};
