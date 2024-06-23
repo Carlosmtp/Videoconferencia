@@ -1,7 +1,7 @@
 $font-stack: 'Roboto', sans-serif;
 
 $font-sizes: (
-    "title": 5rem,
+    "title": 0.5rem,
     "sub-title": 2rem,
     "button": 1.5rem
 );
@@ -28,16 +28,16 @@ $colors: (
     color: $color;
 }
 
-
-.main-title{
+// Estilos
+.main-title {
     @include font-styles("title", "bold", map-get($colors, "main-title"));
     margin-bottom: 20px;
 }
 
-.sub-title{
+.sub-title {
     @include font-styles("sub-title", "regular", map-get($colors, "sub-title"));
     margin-bottom: 20px;
-} 
+}
 
 #logout-button {
     @include font-styles("button", "regular", map-get($colors, "button"));
@@ -45,17 +45,14 @@ $colors: (
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.5s;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: 0.5s;;
     padding: 0 50px;
 
     &:hover {
         background-color: map-get($colors, "button-hover");
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-        transition: 0.5s;
     }
 }
-

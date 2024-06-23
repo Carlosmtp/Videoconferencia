@@ -55,6 +55,9 @@ export default function Dashboard() {
     }, [auth.userLogged, dispatch]);
 
     useEffect(() => {
+        if (!auth.userLogged) {
+            navigate("/");
+        }
         if (auth.userLogged && loading) {
             handleUserCreation().finally(() => setLoading(false));
         }
@@ -111,15 +114,15 @@ export default function Dashboard() {
                     <span className="sub-title">{user.name}</span>
                 )}
             </div>
-            <div className="flex center-item">
-                <button onClick={onHandleChat} className="login-button background-color-green color-white">
+            <div className="flex center-items">
+                <button onClick={onHandleChat} className="custom-button background-color-green color-white">
                     Chat
                 </button>
-                <button onClick={onHandleVideoCall} className="login-button background-color-blue color-white">
+                <button onClick={onHandleVideoCall} className="custom-button background-color-blue color-white">
                     Video call
                 </button>
             </div>
-            <div className="flex center-item">
+            <div className="flex center-items">
                 <button id="logout-button" onClick={onHandleButtonLogout}>
                     Logout
                 </button>

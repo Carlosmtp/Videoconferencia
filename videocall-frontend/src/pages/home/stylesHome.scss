@@ -1,20 +1,35 @@
+// Importación de la fuente de Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+// Variables comunes
+$common-border-radius: 20px;
+$common-font-size: 1rem;
+$chat-primary-color: rgb(219, 229, 235);
+$placeholder-bg: #e0e0e0;
+$placeholder-color: #333;
+$placeholder-border: 1px solid #ccc;
+$chat-textarea-bg: #fff;
+$send-button-bg: #4CAF50;
+$send-button-hover: #45a049;
+$send-button-color: #fff;
+
+// Variables del botón de inicio de sesión
 $login-button-border-radius: 50px;
 $google-icon-size: 24px;
-// colors
 $login-button-color: #fff;
 $login-button-bg: #2f80ed;
 $google-icon-bg: #bb6666;
 $login-button-hover: #5396ee;
+$shadow-color: rgba(0, 0, 0, 0.25);
 
-// mixins
+// Mixins
 @mixin flex-center {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+// Estilos del botón de inicio de sesión
 #login-button {
     @include flex-center;
     font-family: 'Roboto', sans-serif;
@@ -25,12 +40,17 @@ $login-button-hover: #5396ee;
     border: none;
     border-radius: $login-button-border-radius;
     cursor: pointer;
-    transition: background-color 0.3s;
-    transition: 0.5s;
-}
+    padding: 12px 24px;
+    transition: background-color 0.3s, box-shadow 0.5s;
 
-#login-button p {
-    margin: 10px;
+    &:hover {
+        background-color: $login-button-hover;
+        box-shadow: 0px 4px 8px $shadow-color;
+    }
+
+    #google-icon-container {
+        margin-right: 10px; // Ajuste del margen entre el ícono y el texto
+    }
 }
 
 #google-icon-container {
@@ -39,15 +59,30 @@ $login-button-hover: #5396ee;
     width: $login-button-border-radius;
     border-radius: $login-button-border-radius;
     background: $google-icon-bg;
+
+    #google-icon {
+        height: $google-icon-size;
+        width: $google-icon-size;
+    }
 }
 
-#google-icon {
-    height: $google-icon-size;
-    width: $google-icon-size;
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    font-size: $common-font-size;
+    color: #333;
 }
 
-#login-button:hover {
-    background-color: $login-button-hover;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    transition: 0.5s;
+@media (max-width: 768px) {
+    #login-button {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+    }
 }

@@ -33,7 +33,6 @@ io.on('connection', (socket) => {
             const { name } = user;
             const firstName = name.split(" ")[0];
             const messageWithSender = `${firstName}: ${messageData}`;
-            console.log("New message:", messageWithSender);
             io.emit("new-message", messageWithSender);
         }
     });
