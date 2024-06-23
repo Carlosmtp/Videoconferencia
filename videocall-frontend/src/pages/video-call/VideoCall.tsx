@@ -8,6 +8,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
 import { concatNewMessage } from "../../redux/chatSlice.ts";  // Import your chatSlice action
+// import { BsChatSquareText } from "react-icons/bs";
+import { BsChatRightTextFill } from "react-icons/bs";
 
 import io from 'socket.io-client';
 
@@ -22,6 +24,7 @@ export default function VideoCall() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const messageRef = useRef<HTMLTextAreaElement>(null);
+    const messageRefLat = useRef<HTMLTextAreaElement>(null);
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const user = useSelector((state: { user: any }) => state.user);
@@ -30,6 +33,27 @@ export default function VideoCall() {
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
+    const [isChatSelected, setIsChatSelected] = useState(true);
+
+    const toggleChatSelected = () => {
+        setIsChatSelected(!isChatSelected);
+    };
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 768px)");
+
+        const handleMediaQueryChange = (event: MediaQueryListEvent) => {
+            setIsChatSelected(false);
+        };
+
+        setIsChatSelected(mediaQuery.matches);
+
+        mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+        return () => {
+            mediaQuery.removeEventListener("change", handleMediaQueryChange);
+        };
+    }, []);
     useEffect(() => {
         if (user.email === "") {
             window.location.reload();
@@ -55,7 +79,7 @@ export default function VideoCall() {
         videoCallSocket.on('offer', async (data) => {
             try {
                 if (!pc) return;
-                
+
                 await pc.setRemoteDescription(new RTCSessionDescription(data));
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
@@ -68,7 +92,7 @@ export default function VideoCall() {
         videoCallSocket.on('answer', async (data) => {
             try {
                 if (!pc) return;
-                
+
                 await pc.setRemoteDescription(new RTCSessionDescription(data));
             } catch (error) {
                 console.error('Error handling answer:', error);
@@ -78,7 +102,7 @@ export default function VideoCall() {
         videoCallSocket.on('candidate', async (data) => {
             try {
                 if (!pc) return;
-                
+
                 await pc.addIceCandidate(new RTCIceCandidate(data));
             } catch (error) {
                 console.error('Error handling ICE candidate:', error);
@@ -117,7 +141,7 @@ export default function VideoCall() {
         };
 
         peerConnection.ontrack = (event) => {
-            if (remoteVideoRef.current){
+            if (remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = event.streams[0];
             }
         };
@@ -128,7 +152,7 @@ export default function VideoCall() {
             stream.getTracks().forEach((track) => {
                 peerConnection.addTrack(track, stream);
             });
-            if (localVideoRef.current){
+            if (localVideoRef.current) {
                 localVideoRef.current.srcObject = stream;
             }
 
@@ -217,13 +241,10 @@ export default function VideoCall() {
     }
 
     const handleSend = () => {
-        if (messageRef.current!.value === "" || messageRef.current!.value === "\n") {
-            messageRef.current!.value = "";
-            return;
-        }
-        const newMessage = messageRef.current!.value;
+        const newMessage = messageRef.current!.value + messageRefLat.current!.value;
         chatSocket.emit("new-message", newMessage);
         messageRef.current!.value = "";
+        messageRefLat.current!.value = "";
     };
 
     const handleKeyPress = (event) => {
@@ -235,6 +256,9 @@ export default function VideoCall() {
 
     return (
         <div className="container">
+            <div>
+                
+            </div>
             <div className="video-call-section">
                 <div className="videoo-call-placeholder">
                     <video className="video" ref={remoteVideoRef} autoPlay playsInline />
@@ -251,16 +275,48 @@ export default function VideoCall() {
                     <button onClick={videoCall.micStatus ? deactivateMic : activateMic} className={videoCall.micStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
                         {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
                     </button>
+                    {isChatSelected ? (
+                        <div className="invisible"></div>
+                    ) : (
+                        <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button>
+                    )}
+
                 </div>
 
-                <div className="video-call-chat">
-                    <textarea className="video-call-chat-history" readOnly defaultValue={chat.history}></textarea>
-                    <div className="video-call-chat-input">
-                        <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message"></textarea>
-                        <button onClick={handleSend} className="send-button"><IoSend /></button>
+                <div>
+                    <div className="video-call-chat" id="lateral-chat">
+                        <textarea className="video-call-chat-history" readOnly defaultValue={chat.history}></textarea>
+                        <div className="video-call-chat-input">
+                            <textarea ref={messageRefLat} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" defaultValue=""></textarea>
+                            <button onClick={handleSend} className="send-button"><IoSend /></button>
+                        </div>
                     </div>
                 </div>
+
+
+                {isChatSelected ? (
+                    <div className="video-call-chat toggle-chat">
+                        <textarea className="video-call-chat-history" readOnly defaultValue={chat.history}></textarea>
+                        <div className="video-call-chat-input">
+                            <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" defaultValue=""></textarea>
+                            <button onClick={handleSend} className="send-button"><IoSend /></button>
+                        </div>
+                        <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button>
+                    </div>
+                ) : (
+                    // <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button> 
+                    <div className="video-call-chat toggle-chat" id="invisible">
+                        <textarea className="video-call-chat-history" readOnly defaultValue={chat.history}></textarea>
+                        <div className="video-call-chat-input">
+                            <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" defaultValue=""></textarea>
+                            <button onClick={handleSend} className="send-button"><IoSend /></button>
+                        </div>
+                        <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button>
+                    </div>
+                )}
+
             </div>
+
         </div>
     );
 };

@@ -2,10 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  max-height: 150%;
+  max-width: 100%;
   background-color: #f0f0f0;
   padding: 10px;
-  box-sizing: border-box;
 }
 
 .video-call-section {
@@ -13,10 +13,14 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 1200px;
+  max-width: 100%;
   height: 100%;
   padding: 20px;
   box-sizing: border-box;
+}
+
+.invisible {
+  display: none;
 }
 
 .video-call-placeholder {
@@ -202,8 +206,51 @@
     font-size: 0.875rem;
     height: 30px;
   }
-  .video-call-chat .send-button {
+  .video-call-chat lateral-chat .send-button {
     height: 2.5rem;
     font-size: 0.875rem;
+  }
+}
+#lateral-chat {
+  display: default;
+}
+
+.toggle-button,
+.toggle-chat {
+  display: none;
+}
+
+#invisible {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  #lateral-chat {
+    display: none;
+  }
+  .toggle-button {
+    display: block;
+    width: 4rem;
+    height: 4rem;
+    border: none;
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0.5rem;
+    flex-shrink: 0;
+  }
+  .toggle-chat {
+    display: block;
+    position: absolute;
+    max-width: 80%;
+  }
+  .video-call-chat-history {
+    flex: 1;
+    min-height: 100px;
+    min-width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }/*# sourceMappingURL=stylesVideoCall.css.map */
