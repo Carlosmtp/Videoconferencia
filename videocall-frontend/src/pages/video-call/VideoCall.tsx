@@ -8,6 +8,8 @@ import { useAuth } from "../../context/AuthContext.tsx";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
+// import { BsChatSquareText } from "react-icons/bs";
+import { BsChatRightTextFill } from "react-icons/bs";
 
 import io from 'socket.io-client';
 
@@ -23,13 +25,21 @@ export default function VideoCall() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const chatHistoryRef = useRef<HTMLTextAreaElement>(null);
+    const chatHistoryRefLat = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLTextAreaElement>(null);
+    const messageRefLat = useRef<HTMLTextAreaElement>(null);
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const user = useSelector((state: { user: any }) => state.user);
     const videoCall = useSelector((state: { videoCall: any }) => state.videoCall);
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+
+    const [isChatSelected, setIsChatSelected] = useState(true); // State to manage chat visibility
+
+    const toggleChatSelected = () => {
+        setIsChatSelected(!isChatSelected);
+    };
 
     useEffect(() => {
         if (user.email === "") {
@@ -87,6 +97,7 @@ export default function VideoCall() {
 
         const handleMessage = (message) => {
             chatHistoryRef.current!.value += `${message}\n`;
+            chatHistoryRefLat.current!.value += `${message}\n`;
         };
 
         chatSocket.on("new-message", handleMessage);
@@ -217,13 +228,18 @@ export default function VideoCall() {
     }
 
     const handleSend = () => {
-        if (messageRef.current!.value === "" || messageRef.current!.value === "\n") {
-            messageRef.current!.value = "";
-            return;
-        }
-        const newMessage = messageRef.current!.value;
+        // if ( (messageRef.current!.value === "" || messageRef.current!.value === "\n")
+        //     && (messageRefLat.current!.value === "" || messageRefLat.current!.value === "\n")
+        // ) {
+        //     console.log(messageRefLat.current!.value)
+        //     messageRef.current!.value = "";
+        //     messageRefLat.current!.value = "";
+        //     return;
+        // }
+        const newMessage = messageRef.current!.value + messageRefLat.current!.value;
         chatSocket.emit("new-message", newMessage);
         messageRef.current!.value = "";
+        messageRefLat.current!.value = "";
     };
 
     const handleKeyPress = (event) => {
@@ -237,29 +253,62 @@ export default function VideoCall() {
         <div className="container">
             <div className="video-call-section">
                 <div className="videoo-call-placeholder">
-                <video className = "video" ref={remoteVideoRef} autoPlay playsInline />
-                <video className = "local-video" ref={localVideoRef} autoPlay playsInline muted />
-                    </div>
+                    <video className = "video" ref={remoteVideoRef} autoPlay playsInline />
+                    <video className = "local-video" ref={localVideoRef} autoPlay playsInline muted />
+                </div>
                 
-                    <div className="video-call-controls">
-                        <button onClick={endCall} className="round-button color-black hover-red">
-                            <MdCallEnd />
-                        </button>
-                        <button onClick={videoCall.camStatus ? deactivateCamera : activateCamera} className={ videoCall.camStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
-                            {videoCall.camStatus ? <BsFillCameraVideoFill /> : <BsFillCameraVideoOffFill />}
-                        </button>
-                        <button onClick={videoCall.micStatus? deactivateMic : activateMic} className={ videoCall.micStatus? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
-                            {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
-                        </button>
-                    </div>
-                <div className="video-call-chat">
-                    <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
-                    <div className="video-call-chat-input">
-                        <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message"></textarea>
-                        <button onClick={handleSend} className="send-button"><IoSend /></button>
+                <div className="video-call-controls">
+                    <button onClick={endCall} className="round-button color-black hover-red">
+                        <MdCallEnd />
+                    </button>
+                    <button onClick={videoCall.camStatus ? deactivateCamera : activateCamera} className={ videoCall.camStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                        {videoCall.camStatus ? <BsFillCameraVideoFill /> : <BsFillCameraVideoOffFill />}
+                    </button>
+                    <button onClick={videoCall.micStatus? deactivateMic : activateMic} className={ videoCall.micStatus? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                        {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
+                    </button>
+                    { isChatSelected ? (
+                        <div></div>
+                    ) : (
+                        <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button> 
+                    ) }
+
+                </div>
+
+                <div>
+                    <div className="video-call-chat" id="lateral-chat">
+                        <textarea ref={chatHistoryRefLat} className="video-call-chat-history" readOnly defaultValue=""></textarea>
+                        <div className="video-call-chat-input">
+                            <textarea ref={messageRefLat} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" defaultValue=""></textarea>
+                            <button onClick={handleSend} className="send-button"><IoSend /></button>
+                        </div>
                     </div>
                 </div>
+
+
+                { isChatSelected ? (
+                    <div className="video-call-chat toggle-chat">
+                        <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
+                        <div className="video-call-chat-input">
+                            <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" defaultValue=""></textarea>
+                            <button onClick={handleSend} className="send-button"><IoSend /></button>
+                        </div>
+                        <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button>
+                    </div>
+                ):(
+                    // <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button> 
+                    <div className="video-call-chat toggle-chat" id="invisible">
+                        <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
+                        <div className="video-call-chat-input">
+                            <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" defaultValue=""></textarea>
+                            <button onClick={handleSend} className="send-button"><IoSend /></button>
+                        </div>
+                        <button onClick={toggleChatSelected} className="toggle-button"> <BsChatRightTextFill /> </button>
+                    </div>
+                )}
+
             </div>
+            
         </div>
     );
 };
