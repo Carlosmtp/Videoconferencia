@@ -4,10 +4,10 @@ import { MdCallEnd } from "react-icons/md";
 import { FaMicrophoneSlash, FaMicrophone } from "react-icons/fa";
 import { BsFillCameraVideoOffFill, BsFillCameraVideoFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
-import { useAuth } from "../../context/AuthContext.tsx";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setCallStarted, setCamStatus, setMicStatus } from "../../redux/videoCallSlice.ts";
+import { concatNewMessage } from "../../redux/chatSlice.ts";  // Import your chatSlice action
 
 import io from 'socket.io-client';
 
@@ -19,20 +19,20 @@ const turnServerUsername = process.env.REACT_APP_TURN_SERVER_USERNAME as string;
 const turnServerCredential = process.env.REACT_APP_TURN_SERVER_CREDENTIAL as string;
 
 export default function VideoCall() {
-    const auth = useAuth();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const chatHistoryRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLTextAreaElement>(null);
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const user = useSelector((state: { user: any }) => state.user);
     const videoCall = useSelector((state: { videoCall: any }) => state.videoCall);
+    const chat = useSelector((state: { chat: any }) => state.chat);
     const [pc, setPc] = useState<RTCPeerConnection | null>(null);
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
     useEffect(() => {
         if (user.email === "") {
+            window.location.reload();
             navigate("/dashboard");
         }
         if (!videoCall.callStarted) {
@@ -86,7 +86,7 @@ export default function VideoCall() {
         });
 
         const handleMessage = (message) => {
-            chatHistoryRef.current!.value += `${message}\n`;
+            dispatch(concatNewMessage(message));
         };
 
         chatSocket.on("new-message", handleMessage);
@@ -235,34 +235,33 @@ export default function VideoCall() {
 
     return (
         <div className="container">
-            <div className="flex center-item margin-bottom-0">
-                <div className="video-and-buttons">
-                    <div className="video-call-placeholder">
-                        <video ref={localVideoRef} autoPlay playsInline muted />
-                        <video ref={remoteVideoRef} autoPlay playsInline />
-                    </div>
-                    <div className="video-call-buttons">
-                        <button onClick={endCall} className="round-button color-black hover-red">
-                            <MdCallEnd />
-                        </button>
-                        <button onClick={videoCall.camStatus ? deactivateCamera : activateCamera} className={ videoCall.camStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
-                            {videoCall.camStatus ? <BsFillCameraVideoFill /> : <BsFillCameraVideoOffFill />}
-                        </button>
-                        <button onClick={videoCall.micStatus? deactivateMic : activateMic} className={ videoCall.micStatus? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
-                            {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
-                        </button>
-                    </div>
+            <div className="video-call-section">
+                <div className="videoo-call-placeholder">
+                    <video className="video" ref={remoteVideoRef} autoPlay playsInline />
+                    <video className="local-video" ref={localVideoRef} autoPlay playsInline muted />
                 </div>
+
+                <div className="video-call-controls">
+                    <button onClick={endCall} className="round-button color-black hover-red">
+                        <MdCallEnd />
+                    </button>
+                    <button onClick={videoCall.camStatus ? deactivateCamera : activateCamera} className={videoCall.camStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                        {videoCall.camStatus ? <BsFillCameraVideoFill /> : <BsFillCameraVideoOffFill />}
+                    </button>
+                    <button onClick={videoCall.micStatus ? deactivateMic : activateMic} className={videoCall.micStatus ? "round-button color-black hover-red" : "round-button background-color-red hover-red"}>
+                        {videoCall.micStatus ? <FaMicrophone /> : <FaMicrophoneSlash />}
+                    </button>
+                </div>
+
                 <div className="video-call-chat">
-                    <textarea ref={chatHistoryRef} className="video-call-chat-history" readOnly defaultValue=""></textarea>
-                    <div className="video-call-chat-input-area">
-                        <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message" />
-                        <button onClick={handleSend} className="send-button background-color-green color-white">
-                            <IoSend />
-                        </button>
+                    <textarea className="video-call-chat-history" readOnly defaultValue={chat.history}></textarea>
+                    <div className="video-call-chat-input">
+                        <textarea ref={messageRef} onKeyDown={handleKeyPress} className="video-call-chat-input-textarea" placeholder="Type a message"></textarea>
+                        <button onClick={handleSend} className="send-button"><IoSend /></button>
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};
+

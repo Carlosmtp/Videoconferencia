@@ -1,7 +1,106 @@
-#dash-user-photo {
-    height: 100px;
-    width: 100px;
-    border-radius: 100px;
-    margin-right: 10px;
-    margin: 25px;
+.container {
+    font-family: "Roboto", sans-serif;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+
+        .main-title {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #ff0000;
+            margin-bottom: 10px;
+
+            @media (max-width: 768px) {
+                font-size: 4rem;
+            }
+
+            @media (max-width: 480px) {
+                font-size: 3rem;
+            }
+        }
+
+        .sub-title {
+            font-size: 2rem;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 10px;
+
+            @media (max-width: 768px) {
+                font-size: 1.5rem;
+            }
+
+            @media (max-width: 480px) {
+                font-size: 1.2rem;
+            }
+        }
+
+        .user-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    }
+
+    .flex {
+        display: flex;
+        justify-content: center;
+    }
+
+    .center-items {
+        margin-top: 20px;
+    }
+
+    .custom-button {
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.5s;
+        padding: 15px 50px;
+        margin: 0 10px;
+
+        &:hover {
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        &.background-color-green {
+            background-color: #28a745;
+
+            &:hover {
+                background-color: #218838;
+            }
+        }
+
+        &.background-color-blue {
+            background-color: #007bff;
+
+            &:hover {
+                background-color: #0069d9;
+            }
+        }
+    }
+
+    #logout-button {
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #fff;
+        background-color: #d9534f;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.5s;
+        padding: 15px 50px;
+
+        &:hover {
+            background-color: #c9302c;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        }
+    }
 }
