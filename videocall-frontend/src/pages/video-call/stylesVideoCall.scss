@@ -22,6 +22,9 @@ $send-button-color: white;
     align-items: $align-setting;
 }
 
+
+
+
 // Estilos del componente VideoCall en SCSS
 .container {
     display: flex;
@@ -38,7 +41,8 @@ $send-button-color: white;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 1200px;
+    // max-width: 1200px;
+    max-width: 100%;
     height: 100%;
     padding: 20px;
     box-sizing: border-box;
@@ -244,11 +248,58 @@ $send-button-color: white;
             padding: 5px;
             font-size: 0.875rem;
             height: 30px;
-        }
+        }lateral-chat
 
         .send-button {
             height: 2.5rem;
             font-size: 0.875rem;
         }
+    }
+}
+
+#lateral-chat{
+    display: default;
+}
+
+.toggle-button,
+.toggle-chat{
+    display: none;
+}
+
+#invisible{
+    display: none;
+}
+
+@media (max-width: 1050px){
+    #lateral-chat{
+        display: none;
+    }
+
+    .toggle-button{
+        display: block;
+        width: 4rem;
+        height: 4rem;
+        border: none;
+        font-size: 2rem;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.3s;
+        margin: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    
+    .toggle-chat{
+        display: block;
+        position: absolute;
+        max-width: 80%;
+    }
+
+    .video-call-chat-history{
+        height: 100%;
+        max-width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
